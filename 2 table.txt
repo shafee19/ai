@@ -1,0 +1,101 @@
+% Knowledge Base
+
+% Facts about students and their scores
+student(11021, 'Saman', 'Perera').
+student(11022, 'Mohamed', 'Humaith').
+student(11023, 'Nimal', 'Silva').
+student(11024, 'Viji', 'Kumar').
+student(11025, 'Lasantha', 'Jayamanna').
+student(11026, 'Nimal', 'Silva').
+student(11027, 'Ponnambalam', 'Ramanadan').
+
+% Scores for the courses
+scores(11021, uct31021, 50).
+scores(11021, SWT31012, 71).
+scores(11021, CIS31012, 57).
+scores(11021, SWT31022, 65).
+scores(11021, NST31022, 61).
+
+scores(11022, uct31021, 65).
+scores(11022, SWT31012, 50).
+scores(11022, CIS31012, 85).
+scores(11022, SWT31022, 49).
+scores(11022, NST31022, 82).
+
+scores(11023, uct31021, 100).
+scores(11023, SWT31012, 85).
+scores(11023, CIS31012, 100).
+scores(11023, SWT31022, 89).
+scores(11023, NST31022, 76).
+
+scores(11024, uct31021, 73).
+scores(11024, SWT31012, 65).
+scores(11024, CIS31012, 59).
+scores(11024, SWT31022, 82).
+scores(11024, NST31022, 66).
+
+scores(11025, uct31021, 60).
+scores(11025, SWT31012, 90).
+scores(11025, CIS31012, 78).
+scores(11025, SWT31022, 96).
+scores(11025, NST31022, 100).
+
+% 1. Check if Janaka is an undergraduate student
+is_undergraduate('Janaka') :- false.  % Janaka is not listed as an undergraduate student
+
+% 2. Registered undergraduates in the department
+registered_undergraduates(Name) :- 
+    student(IndexNo, FirstName, LastName), 
+    atom_concat(FirstName, ' ', Temp), 
+    atom_concat(Temp, LastName, Name).
+
+% 3. Get index no of Silva
+index_no_of_silva(IndexNo) :- 
+    student(IndexNo, 'Nimal', 'Silva').
+
+% 4. Who sat the examination
+sat_exam(Name) :- 
+    student(IndexNo, FirstName, LastName), 
+    scores(IndexNo, _, _), 
+    atom_concat(FirstName, ' ', Temp), 
+    atom_concat(Temp, LastName, Name).
+
+% 5. Who missed the examination
+missed_exam(Name) :- 
+    student(IndexNo, FirstName, LastName), 
+    \+ scores(IndexNo, _, _), 
+    atom_concat(FirstName, ' ', Temp), 
+    atom_concat(Temp, LastName, Name).
+
+% 6. Check if any student scored 100 marks in any course unit
+scored_100(IndexNo, FirstName, LastName, CourseUnit) :- 
+    scores(IndexNo, CourseUnit, 100),
+    student(IndexNo, FirstName, LastName).
+
+% 7. Get details of the student who scored 100 marks
+who_scored_100(Name, CourseUnit) :- 
+    scored_100(IndexNo, FirstName, LastName, CourseUnit),
+    atom_concat(FirstName, ' ', Temp), 
+    atom_concat(Temp, LastName, Name).
+
+% Example Queries:
+% 1. To check if Janaka is an undergraduate student
+% ?- is_undergraduate('Janaka').  % Should return false.
+
+% 2. To list registered undergraduates
+% ?- registered_undergraduates(Name).  % Should return names of registered undergraduates.
+
+% 3. To find index no of Silva
+% ?- index_no_of_silva(IndexNo).  % Should return IndexNo = 11023 or 11026.
+
+% 4. To see who sat the examination
+% ?- sat_exam(Name).  % Should return names of students who sat for the exam.
+
+% 5. To check who missed the examination
+% ?- missed_exam(Name).  % Should return names of students who missed the exam.
+
+% 6. To check if any student scored 100 marks
+% ?- scored_100(IndexNo, FirstName, LastName, CourseUnit).  % Should return details of students who scored 100.
+
+% 7. To get the names and courses of students who scored 100 marks
+% ?- who_scored_100(Name, CourseUnit).  % Should return names and course units of students who scored 100.

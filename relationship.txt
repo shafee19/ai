@@ -1,0 +1,73 @@
+% Facts about marriages
+married(johil, johana).
+
+% Facts about children
+child(johil, john).
+child(johil, peter).
+child(johil, samila).
+child(johil, rose).
+
+child(johana, john).
+child(johana, peter).
+child(johana, samila).
+child(johana, rose).
+
+child(paul, johil).
+child(paul, nayana).
+child(paul, amala).
+child(paul, sana).
+
+child(pranav, paul).
+child(pranav, sakthi).
+child(pranav, yathav).
+child(pranav, kiran).
+
+% Facts about gender
+male(johil).
+male(john).
+male(peter).
+male(paul).
+male(pranav).
+male(sakthi).
+male(yathav).
+male(kiran).
+
+female(johana).
+female(samila).
+female(rose).
+female(nayana).
+female(amala).
+female(sana).
+
+% Facts about parentage
+parent(P, C) :- child(P, C).
+parent(P, C) :- married(P1, P), child(P1, C).
+
+% Rules to determine family relationships
+father(Child, Father) :- child(Father, Child), male(Father).
+mother(Child, Mother) :- child(Mother, Child), female(Mother).
+
+% Ancestor relationships
+ancestor(A, C) :- parent(A, C).
+ancestor(A, C) :- parent(P, C), ancestor(A, P).
+
+% Queries
+
+% a. Find the father and mother of a given person (e.g., Rose)
+% ?- father(rose, X).
+% ?- mother(rose, Y).
+
+% b. How many ancestors does Peter have?
+% ?- findall(A, ancestor(A, peter), Ancestors), length(Ancestors, Count).
+
+% c. Does Paul have any ancestors? And who is that?
+% ?- findall(A, ancestor(A, paul), Ancestors), Ancestors \= [].
+
+% d. How many Males and Females have? And list males and females.
+% Males
+% ?- findall(M, male(M), MaleList), length(MaleList, MaleCount).
+% Females
+% ?- findall(F, female(F), FemaleList), length(FemaleList, FemaleCount).
+
+% e. Show all the possible ancestor relationships.
+% ?- findall((A, C), ancestor(A, C), AncestorRelations).

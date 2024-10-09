@@ -1,0 +1,34 @@
+% Main rule to solve the 4-Queens problem
+four_queens(Solution) :-
+    Solution = [Q1, Q2, Q3, Q4],           % Queens in 4 rows (Q1 to Q4)
+    permutation([1, 2, 3, 4], Solution),   % Each queen in a different column
+    safe_queens(Solution).                 % Check if the solution is safe
+
+% Check if all queens are placed safely
+safe_queens([]).                           % No more queens to check
+safe_queens([Q|Others]) :-
+    safe(Q, Others, 1),                    % Check if this queen is safe
+    safe_queens(Others).                   % Continue checking the rest
+
+% Check if the current queen is safe from the others
+safe(_, [], _).                            % If no more queens, it's safe
+safe(Q, [Next|Others], Distance) :-
+    Q =\= Next,                            % Queens are not in the same column
+    abs(Q - Next) =\= Distance,            % Queens are not on the same diagonal
+    NextDistance is Distance + 1,          % Move to next row (increase distance)
+    safe(Q, Others, NextDistance).         % Check with remaining queens
+
+% Helper rule to print the solution
+print_solution([]).
+print_solution([H|T]) :-
+    write(H), nl,
+    print_solution(T).
+
+% Entry point to solve and print the 4-Queens solution
+solve_four_queens :-
+    four_queens(Solution),
+    write('Solution: '), nl,
+    print_solution(Solution).
+
+prolog
+four_queens(Solution).

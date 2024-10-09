@@ -1,0 +1,56 @@
+% Define the other bank relations
+other_bank(e, w).
+other_bank(w, e).
+
+% Moves that the farmer can make
+% farmer takes the wolf
+move([X, X, Goat, Cabbage], wolf, [Y, Y, Goat, Cabbage]) :-
+    other_bank(X, Y).
+% farmer takes the goat
+move([X, Wolf, X, Cabbage], goat, [Y, Wolf, Y, Cabbage]) :-
+    other_bank(X, Y).
+% farmer takes the cabbage
+move([X, Wolf, Goat, X], cabbage, [Y, Wolf, Goat, Y]) :-
+    other_bank(X, Y).
+% farmer goes alone
+move([X, Wolf, Goat, Cabbage], farmer, [Y, Wolf, Goat, Cabbage]) :-
+    other_bank(X, Y).
+
+% Safety check - the farmer must be present with the wolf or cabbage if the goat is not
+safety_check(X, X, _). % If the wolf is on the same side as the goat, it's safe
+safety_check(X, _, X). % If the cabbage is on the same side as the goat, it's safe
+
+% Status check to ensure no one gets eaten
+status([Farmer, Wolf, Goat, Cabbage]) :-
+    safety_check(Farmer, Goat, Wolf),    % Farmer must be present if the Goat is with the Wolf
+    safety_check(Farmer, Goat, Cabbage). % Farmer must be present if the Goat is with the Cabbage
+
+% Solution when all are on the east bank
+solution([e, e, e, e], _, []).
+
+% Recursive solution finder with visited states
+solution(Config, Visited, [Move | OtherMoves]) :-
+    move(Config, Move, NextConfig),
+    status(NextConfig),
+    \+ member(NextConfig, Visited),   % Ensure NextConfig has not been visited
+    solution(NextConfig, [NextConfig | Visited], OtherMoves).
+
+% Solve query
+solve(Solution) :-
+    solution([w, w, w, w], [[w, w, w, w]], Solution).
+
+% Entry point to solve the puzzle and print the moves
+solve_and_print :-
+    solve(Solution),
+    write('Solution: '), nl,
+    print_moves(Solution).
+
+% Print each move
+print_moves([]).
+print_moves([Move | Rest]) :-
+    write(Move), nl,
+    print_moves(Rest).
+
+prolog
+?- solve_and_print.
+

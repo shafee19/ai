@@ -1,0 +1,59 @@
+% Define a state as state(MissionariesLeft, CannibalsLeft, BoatSide)
+% BoatSide can be either 'left' or 'right'
+
+% Initial state: 3 missionaries, 3 cannibals on the left side, and the boat on the left.
+initial_state(state(3, 3, left)).
+
+% Goal state: 0 missionaries, 0 cannibals on the left side, and the boat on the right.
+goal_state(state(0, 0, right)).
+
+% Check if the state is safe (i.e., missionaries are not outnumbered by cannibals on either side)
+safe(state(ML, CL, _)) :- 
+    (ML >= CL ; ML = 0),  % Missionaries are not outnumbered on the left, or no missionaries are left
+    MR is 3 - ML,         % Calculate missionaries on the right
+    CR is 3 - CL,         % Calculate cannibals on the right
+    (MR >= CR ; MR = 0).  % Missionaries are not outnumbered on the right, or no missionaries are on the right
+
+% Valid moves across the river
+move(state(ML, CL, left), state(ML2, CL2, right), [M, C]) :- 
+    member([M, C], [[2, 0], [1, 0], [1, 1], [0, 1], [0, 2]]),  % Possible combinations of missionaries and cannibals
+    ML2 is ML - M, CL2 is CL - C,  % Subtract from the left side
+    ML2 >= 0, CL2 >= 0,            % Ensure the number doesn't go below 0
+    safe(state(ML2, CL2, right)).  % Check if the new state is safe
+
+move(state(ML, CL, right), state(ML2, CL2, left), [M, C]) :- 
+    member([M, C], [[2, 0], [1, 0], [1, 1], [0, 1], [0, 2]]),  % Possible combinations of missionaries and cannibals
+    ML2 is ML + M, CL2 is CL + C,  % Add to the left side
+    ML2 =< 3, CL2 =< 3,            % Ensure we don't exceed the number of missionaries or cannibals
+    safe(state(ML2, CL2, left)).   % Check if the new state is safe
+
+% Solve the problem using depth-first search (DFS)
+solve_dfs(Solution) :- 
+    initial_state(InitialState),  % Get the initial state
+    dfs(InitialState, [], Solution).  % Start DFS search
+
+% Depth-first search (DFS) implementation
+dfs(State, Path, [State|Path]) :- 
+    goal_state(State).  % If the current state is the goal state, we are done
+
+dfs(State, Path, Solution) :- 
+    move(State, NextState, _),         % Make a move to the next state
+    \+ member(NextState, Path),        % Ensure the next state is not already in the path (avoid loops)
+    dfs(NextState, [State|Path], Solution).  % Continue searching from the next state
+
+% Query example:
+% ?- solve_dfs(Solution).
+% This will return a solution for the missionaries and cannibals problem.
+
+% To visualize the solution nicely:
+print_solution([]).
+print_solution([state(M, C, B)|Rest]) :-
+    write('Missionaries: '), write(M), write(', Cannibals: '), write(C), write(', Boat: '), write(B), nl,
+    print_solution(Rest).
+
+% Example query:
+% ?- solve_dfs(Solution), reverse(Solution, RevSolution), print_solution(RevSolution).
+
+
+prolog
+solve_dfs(Solution), reverse(Solution, RevSolution), print_solution(RevSolution).
