@@ -1,0 +1,59 @@
+% Knowledge Base
+country(sri_lanka).
+country(turkey).
+country(india).
+country(singapore).
+country(maldives).
+country(pakistan).
+
+% Define the country list
+countryList([sri_lanka, turkey, india, singapore, maldives, pakistan]).
+
+% a. Print the country list
+print_country_list :- 
+    countryList(List),
+    write('Country List: '), write(List), nl.
+
+% b. Order the list into ascending order
+ordered_country_list(OrderedList) :- 
+    countryList(List), 
+    sort(List, OrderedList).
+
+% c. Check whether 'India' and 'Tokyo' is a country or not
+is_country(Country) :- 
+    country(Country).
+
+check_countries :- 
+    (is_country(india) -> write('India is a country.'), nl ; write('India is not a country.'), nl),
+    (is_country(tokyo) -> write('Tokyo is a country.'), nl ; write('Tokyo is not a country.'), nl).
+
+% d. Add 'Japan' at the beginning of the list
+add_japan_to_country_list(NewList) :-
+    countryList(List),
+    NewList = [japan | List].
+
+add_qatar_to_country_list(NewList) :-
+    countryList(List),
+    append(List, [qatar], NewList).
+
+
+% e. Rule to calculate the number of members in the list
+count_countries(Count) :- 
+    countryList(List), 
+    length(List, Count).
+
+% Usage examples
+% To print the country list
+% ?- print_country_list.
+
+% To get the ordered country list
+% ?- ordered_country_list(Ordered).
+
+% To check if 'India' and 'Tokyo' are countries
+% ?- check_countries.
+
+% To add 'Japan' to the country list
+% ?- add_japan_to_country_list(NewList).
+
+% To count the number of countries in the list
+% ?- count_countries(Count).
